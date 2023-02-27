@@ -1,0 +1,87 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $appName: '%app.name%'
+            $appVersion: '%app.version%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Kernel.php'
+
+    App\Service\:
+        resource: '../src/Service/'
+
+    object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+    json_encoder:
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder
+
+    serializer:
+        class: Symfony\Component\Serializer\Serializer
+        arguments:
+            $normalizers: ['@object_normalizer']
+            $encoders: ['@json_encoder']
+
+    Symfony\Component\Serializer\SerializerInterface: '@serializer'
+
+    default_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments:
+            $stream: 'var/log/app.log'
+
+    default_logger:
+        class: Monolog\Logger
+        arguments:
+            $name: 'default'
+            $handlers: ['@default_logger_handler']
+
+    Psr\Log\LoggerInterface: '@default_logger'
+
+    Symfony\Component\HttpClient\HttpClient: ~
+
+    http_client:
+        class: Symfony\Component\HttpClient\CurlHttpClient
+        factory: ['@Symfony\Component\HttpClient\HttpClient', 'create']
+
+    Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
+
+    file_cache:
+        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+
+    Symfony\Contracts\Cache\ItemInterface: '@file_cache'
+
+    rates_api_provider:
+        class: App\Service\CurrencyRates\RatesProvider\ApiRatesProvider
+        arguments:
+            $apiKey: '%rates.provider.api.key%'
+            $url: '%rates.provider.endpoint.url%'
+
+    App\Service\CurrencyRates\RateResolver:
+        arguments:
+            $ratesProvider: '@rates_api_provider'
+
+    bin_to_country_api_provider:
+        class: App\Service\CardBin\ApiCardBinToCountryProvider
+        arguments:
+            $url: '%bin.to.country.provider.endpoint.url%'
+
+    country_codes_collection:
+        class: App\Service\Collection\Collection
+        arguments:
+            $items: '%countries.collection%'
+
+    multiplier_resolver:
+        class: App\Service\Calculation\BinMultiplier\BinMultiplierResolver
+        arguments:
+            $binToCountryProvider: '@bin_to_country_api_provider'
+            $countriesCollection: '@country_codes_collection'
+            $inCollectionMultiplier: '%in.collection.multiplier%'
+            $notInCollectionMultiplier: '%not.in.collection.multiplier%'
+
+    App\Service\Calculation\TransactionCommissionCalculator:
+        arguments:
+            $multiplierProvider: '@multiplier_resolver'
+            $targetCurrency: '%target.currency%'

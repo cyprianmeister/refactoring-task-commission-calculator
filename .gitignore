@@ -1,0 +1,31 @@
+/.env
+/.env.local
+/.env.local.php
+/.env.*.local
+/vendor/
+/var/
+
+###> jetbrains/ide ###
+/.idea/
+###< jetbrains/ide ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+/bin/php-parse
+/bin/phpunit
+/bin/simple-phpunit
+/bin/var-dump-server
+/bin/yaml-lint
+/bin/php-cs-fixer
+/.php-cs-fixer.cache
+/bin/psalm
+/bin/psalm-language-server
+/bin/psalm-plugin
+/bin/psalm-refactor
+/bin/psalter
+/bin/phpstan
+/bin/phpstan.phar
+
+!/**/.gitkeep
