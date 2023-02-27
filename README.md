@@ -53,6 +53,9 @@ IN_COLLECTION_MULTIPLIER=0.01
 NOT_IN_COLLECTION_MULTIPLIER=0.02
 
 RATES_PROVIDER_API_KEY='VQpvy8vtkzWSaXpcCa8laWDUe60oRLDF'
+RATES_PROVIDER_ENDPOINT_URL='https://api.apilayer.com/exchangerates_data/latest'
+
+BIN_TO_COUNTRY_PROVIDER_ENDPOINT_URL='https://lookup.binlist.net/'
 ```
 
 ##  `input.txt` file
