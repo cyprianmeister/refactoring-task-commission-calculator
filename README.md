@@ -71,8 +71,4 @@ BIN_TO_COUNTRY_PROVIDER_ENDPOINT_URL='https://lookup.binlist.net/'
 # // TODO:
 
 1. Write more tests
-2. Utilize cache for providing rates and country information 
-3. Probably would refactor namespaces and folder structure
-4. Add more static code analysis
-
-
+2. Utilize cache for providing rates and country information
