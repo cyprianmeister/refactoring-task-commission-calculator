@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Test\Command;
 
+use App\Calculation\BinMultiplier\BinMultiplierResolver;
+use App\Calculation\TransactionCommissionCalculator;
+use App\CardBin\CardBinToCountryProviderInterface;
+use App\Collection\Collection;
 use App\ConsoleCommand\CalculateConsoleCommand;
-use App\Service\Calculation\BinMultiplier\BinMultiplierResolver;
-use App\Service\Calculation\TransactionCommissionCalculator;
-use App\Service\CardBin\CardBinToCountryProviderInterface;
-use App\Service\Collection\Collection;
-use App\Service\CurrencyRates\RateResolver;
-use App\Service\CurrencyRates\RatesProvider\RatesProviderInterface;
-use App\Service\Input\File\FileInputProvider;
-use App\Service\Input\File\FileReader;
-use App\Service\Money\MoneyConverter;
-use App\Service\Transaction\TransactionDeserializer;
+use App\CurrencyRates\RateResolver;
+use App\CurrencyRates\RatesProvider\RatesProviderInterface;
+use App\Input\File\FileInputProvider;
+use App\Input\File\FileReader;
+use App\Money\MoneyConverter;
+use App\Transaction\TransactionDeserializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -79,7 +79,7 @@ final class CalculateConsoleCommandTest extends TestCase
 
     private function mockRatesProvider(string $targetCurrency, string $fixturePath) : void
     {
-        $jsonRates = \file_get_contents($fixturePath);
+        $jsonRates = (string) \file_get_contents($fixturePath);
         $ratesCollection = new Collection(
             \json_decode($jsonRates, true, 512, JSON_THROW_ON_ERROR)
         );
@@ -93,7 +93,7 @@ final class CalculateConsoleCommandTest extends TestCase
 
     private function mockBinToCountryProvider(string $fixturePath) : void
     {
-        $jsonBinToCountry = \file_get_contents($fixturePath);
+        $jsonBinToCountry = (string) \file_get_contents($fixturePath);
         $binToCountryDecoded = \json_decode($jsonBinToCountry, true, 512, JSON_THROW_ON_ERROR);
 
         $this->binToCountryProviderMock = $this->getMockBuilder(CardBinToCountryProviderInterface::class)->getMock();

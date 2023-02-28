@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\ConsoleCommand;
 
-use App\Exceptions\ApplicationException;
-use App\Service\Calculation\TransactionCalculatorInterface;
-use App\Service\Input\InputProviderInterface;
-use App\Service\Transaction\TransactionDeserializable;
+use App\Calculation\TransactionCalculatorInterface;
+use App\Exception\ApplicationException;
+use App\Input\InputProviderInterface;
+use App\Transaction\TransactionDeserializable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -46,10 +46,10 @@ class CalculateConsoleCommand extends Command
 
             return Command::SUCCESS;
         } catch (ApplicationException $exception) {
-            $this->logger->error($exception->getPrevious()?->getMessage() ?? $exception->getMessage());
+            $this->logger?->error($exception->getPrevious()?->getMessage() ?? $exception->getMessage());
             $this->outputError($exception->getMessage(), $output);
         } catch (\Throwable $exception) {
-            $this->logger->critical($exception->getMessage());
+            $this->logger?->critical($exception->getMessage());
             $this->outputError(ApplicationException::MESSAGE, $output);
         }
 
@@ -66,10 +66,10 @@ class CalculateConsoleCommand extends Command
         $this->inputProvider->setSource($filePath);
 
         foreach ($this->inputProvider->provide() as $item) {
-            if (empty($item)) {
+            if (empty(\trim($item))) {
                 continue;
             }
-            $transaction = $this->deserializer->deserialize($item);
+            $transaction = $this->deserializer->deserialize((string) $item);
             yield $this->calculator->calculate($transaction);
         }
     }
