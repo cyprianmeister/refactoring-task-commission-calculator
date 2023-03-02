@@ -29,6 +29,8 @@ final class CalculateConsoleCommandTest extends TestCase
 
     /**
      * @dataProvider provider
+     *
+     * @throws \JsonException
      */
     public function testExecute(
         string $targetCurrency,
@@ -77,13 +79,12 @@ final class CalculateConsoleCommandTest extends TestCase
         return CalculateConsoleCommandProvider::getTestCase();
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mockRatesProvider(string $targetCurrency, string $fixturePath) : void
     {
-        $jsonRates = (string) \file_get_contents($fixturePath);
-        $ratesCollection = new Collection(
-            \json_decode($jsonRates, true, 512, JSON_THROW_ON_ERROR)
-        );
-
+        $ratesCollection = new Collection($this->decodeFromFile($fixturePath));
         $this->ratesProviderMock = $this->getMockBuilder(RatesProviderInterface::class)->getMock();
         $this->ratesProviderMock->expects($this->atLeastOnce())
             ->method('provide')
@@ -91,11 +92,12 @@ final class CalculateConsoleCommandTest extends TestCase
             ->willReturn($ratesCollection);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mockBinToCountryProvider(string $fixturePath) : void
     {
-        $jsonBinToCountry = (string) \file_get_contents($fixturePath);
-        $binToCountryDecoded = \json_decode($jsonBinToCountry, true, 512, JSON_THROW_ON_ERROR);
-
+        $binToCountryDecoded = $this->decodeFromFile($fixturePath);
         $this->binToCountryProviderMock = $this->getMockBuilder(CardBinToCountryProviderInterface::class)->getMock();
         $map = \array_map(static function ($bin, $countryCode) {
             return [(string) $bin, $countryCode];
@@ -103,5 +105,15 @@ final class CalculateConsoleCommandTest extends TestCase
         $this->binToCountryProviderMock
             ->method('provide')
             ->willReturnMap($map);
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function decodeFromFile(string $fixturePath) : array
+    {
+        $jsonBinToCountry = (string) \file_get_contents($fixturePath);
+
+        return \json_decode($jsonBinToCountry, true, 512, JSON_THROW_ON_ERROR);
     }
 }
