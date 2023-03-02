@@ -10,10 +10,7 @@ final class FileReader implements FileReaderInterface
 {
     private string $filePath;
 
-    /**
-     * @var resource
-     */
-    private $handle;
+    private mixed $handle;
 
     public function setFilePath(string $filePath) : void
     {
@@ -50,16 +47,18 @@ final class FileReader implements FileReaderInterface
 
     private function readFileLine() : string
     {
-        return (string) \fgets($this->handle);
+        return \is_resource($this->handle) ? (string) \fgets($this->handle) : '';
     }
 
     private function isEndOfFile() : bool
     {
-        return \feof($this->handle);
+        return !\is_resource($this->handle) || \feof($this->handle);
     }
 
     private function closeFile() : void
     {
-        \fclose($this->handle);
+        if (\is_resource($this->handle)) {
+            \fclose($this->handle);
+        }
     }
 }

@@ -69,7 +69,7 @@ class CalculateConsoleCommand extends Command
             if (empty(\trim($item))) {
                 continue;
             }
-            $transaction = $this->deserializer->deserialize((string) $item);
+            $transaction = $this->deserializer->deserialize($item);
             yield $this->calculator->calculate($transaction);
         }
     }

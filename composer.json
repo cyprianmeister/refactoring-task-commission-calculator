@@ -25,7 +25,8 @@
         "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-latest",
         "symfony/phpunit-bridge": "^6.2",
-        "symfony/var-dumper": "^6.2"
+        "symfony/var-dumper": "^6.2",
+        "vimeo/psalm": "^5.7"
     },
     "autoload": {
         "psr-4": {
@@ -45,7 +46,9 @@
         "phpunit": "phpunit",
         "fix-cs": "php-cs-fixer fix",
         "test-cs": "php-cs-fixer fix --dry-run -v",
-        "test": ["@phpunit", "@test-cs"],
+        "test-ca-psalm": "bin/psalm",
+        "test-ca-phpstan": "bin/phpstan",
+        "test": ["@phpunit", "@test-cs", "@test-ca-psalm", "@test-ca-phpstan"],
         "copy-env": "cp .env.dist .env",
         "post-install-cmd": [
             "@copy-env"

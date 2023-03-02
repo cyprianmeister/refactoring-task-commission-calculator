@@ -25,7 +25,7 @@ to install dependencies
 ./make install
 ```
 
-to run tests
+to run tests and static code analysis
 
 ```bash
 ./make qa
