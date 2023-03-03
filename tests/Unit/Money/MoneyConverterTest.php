@@ -26,7 +26,7 @@ class MoneyConverterTest extends TestCase
     /**
      * @dataProvider getTestData
      */
-    public function testConvert(Money $money, string $targetCurrency, float $rate, Money $expected) : void
+    public function testConvertMoneyToAnotherCurrency(Money $money, string $targetCurrency, float $rate, Money $expected) : void
     {
         /**
          * @phpstan-ignore-next-line
@@ -44,31 +44,31 @@ class MoneyConverterTest extends TestCase
     public function getTestData() : array
     {
         return [
-            [
+            '50 USD to EUR' => [
                 Money::create(50.00, 'USD'),
                 'EUR',
                 1.072036,
                 Money::create(46.64022476857121, 'EUR'),
             ],
-            [
+            '100 PLN to EUR' => [
                 Money::create(100.00, 'PLN'),
                 'EUR',
                 4.769866,
                 Money::create(20.964949539462953, 'EUR'),
             ],
-            [
+            '200 GBP to EUR' => [
                 Money::create(200.00, 'GBP'),
                 'EUR',
                 0.8901,
                 Money::create(224.69385462307605, 'EUR'),
             ],
-            [
+            '100 GBP to EUR' => [
                 Money::create(100.00, 'GBP'),
                 'EUR',
                 0.8901,
                 Money::create(112.34692731153802, 'EUR'),
             ],
-            [
+            '100 EUR to EUR' => [
                 Money::create(100.00, 'EUR'),
                 'EUR',
                 1,

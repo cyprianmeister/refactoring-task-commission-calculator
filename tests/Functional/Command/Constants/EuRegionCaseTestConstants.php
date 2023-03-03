@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Command\Constants;
+namespace App\Test\Functional\Command\Constants;
 
 final class EuRegionCaseTestConstants
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Command;
+namespace App\Test\Functional\Command;
 
 use App\Calculation\BinMultiplier\BinMultiplierResolver;
 use App\Calculation\TransactionCommissionCalculator;
@@ -32,7 +32,7 @@ final class CalculateConsoleCommandTest extends TestCase
      *
      * @throws \JsonException
      */
-    public function testExecute(
+    public function testExecuteCalculateCommand(
         string $targetCurrency,
         array $countryCodesCollection,
         float|int $inCollectionMultiplier,

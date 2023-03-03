@@ -16,6 +16,10 @@ run() {
     docker run -it -v ./:/var/app commission-calculator-image bin/console calculate input.txt
 }
 
+terminal() {
+    docker run -it -v ./:/var/app commission-calculator-image sh
+}
+
 run-all() {
     build
     install
