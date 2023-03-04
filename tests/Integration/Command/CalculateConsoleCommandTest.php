@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Functional\Command;
+namespace App\Test\Integration\Command;
 
 use App\BinCountry\BinCountryResolverInterface;
 use App\CalculateConsoleCommand;

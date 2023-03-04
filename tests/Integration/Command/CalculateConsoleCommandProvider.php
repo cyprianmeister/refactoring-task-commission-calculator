@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Functional\Command;
+namespace App\Test\Integration\Command;
 
-use App\Test\Functional\Command\Constants\EuRegionCaseTestConstants;
+use App\Test\Integration\Command\Constants\EuRegionCaseTestConstants;
 
 final class CalculateConsoleCommandProvider
 {
