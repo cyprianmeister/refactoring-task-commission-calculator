@@ -82,5 +82,5 @@ services:
 
     App\Calculation\TransactionCommissionCalculator:
         arguments:
-            $multiplierProvider: '@multiplier_resolver'
+            $multiplierResolver: '@multiplier_resolver'
             $targetCurrency: '%target.currency%'

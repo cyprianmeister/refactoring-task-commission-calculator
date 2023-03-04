@@ -13,7 +13,7 @@ final class TransactionCommissionCalculator implements TransactionCalculatorInte
 {
     public function __construct(
         private readonly MoneyConverterInterface $moneyConverter,
-        private readonly BinMultiplierResolverInterface $multiplierProvider,
+        private readonly BinMultiplierResolverInterface $multiplierResolver,
         private readonly string $targetCurrency
     ) {
     }
@@ -25,7 +25,7 @@ final class TransactionCommissionCalculator implements TransactionCalculatorInte
             $this->targetCurrency
         );
 
-        $commission = $money->getAmount() * $this->multiplierProvider->resolve($transaction->getBin());
+        $commission = $money->getAmount() * $this->multiplierResolver->resolve($transaction->getBin());
 
         return \round($commission, 2);
     }
