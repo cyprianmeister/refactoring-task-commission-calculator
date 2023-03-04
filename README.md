@@ -1,4 +1,5 @@
-# Short introduction - task solution (original task description at the bottom of this file)
+# Short introduction
+### Task solution (original task description is attached at the bottom of this file)
 
 App parameters can be changed via .env file.  
 Original input.txt file is attached in the root of the project.
