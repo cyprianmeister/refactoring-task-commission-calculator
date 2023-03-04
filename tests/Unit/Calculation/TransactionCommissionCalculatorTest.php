@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Test\Unit\Calculation;
 
 use App\Calculation\BinMultiplier\BinMultiplierResolverInterface;
@@ -31,13 +33,17 @@ class TransactionCommissionCalculatorTest extends TestCase
          */
         $this->moneyConverter->expects($this->once())
             ->method('convert')
-            ->with($this->equalTo(
+            ->with(
+                $this->equalTo(
                     Money::create($transaction->getAmount(), $transaction->getCurrency())
                 ),
                 $this->equalTo($targetCurrency)
             )
             ->willReturn($mockData['convertedMoney']);
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         $this->binMultiplierResolver->expects($this->once())
             ->method('resolve')
             ->with($this->equalTo($transaction->getBin()))
