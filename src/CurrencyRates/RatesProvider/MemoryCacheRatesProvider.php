@@ -6,24 +6,28 @@ namespace App\CurrencyRates\RatesProvider;
 
 use App\Collection\Collection;
 use App\Collection\CollectionInterface;
+use App\CurrencyRates\FetchRatesAdapter\FetchRatesAdapterInterface;
 use App\Exception\RatesProviderException;
 
-abstract class AbstractRatesProvider implements RatesProviderInterface
+final class MemoryCacheRatesProvider implements RatesProviderInterface
 {
-    protected array $rates = [];
+    private array $rates = [];
 
-    protected ?string $baseCurrency = null;
+    private ?string $baseCurrency = null;
 
+    public function __construct(private readonly FetchRatesAdapterInterface $ratesAdapter)
+    {
+    }
+
+    /**
+     * @throws RatesProviderException
+     */
     public function provide(string $baseCurrency) : CollectionInterface
     {
         try {
             if ($baseCurrency !== $this->baseCurrency || empty($this->rates)) {
                 $this->baseCurrency = $baseCurrency;
-                $fetched = $this->fetchData();
-
-                if ($extracted = $this->extractData($fetched)) {
-                    $this->rates = $extracted;
-                }
+                $this->rates = $this->ratesAdapter->fetchRates($baseCurrency);
             }
 
             return new Collection($this->rates);
@@ -31,8 +35,4 @@ abstract class AbstractRatesProvider implements RatesProviderInterface
             throw new RatesProviderException(previous: $exception);
         }
     }
-
-    abstract protected function fetchData() : array;
-
-    abstract protected function extractData(array $fetched) : ?array;
 }

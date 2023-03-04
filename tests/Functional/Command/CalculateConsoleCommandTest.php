@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Test\Functional\Command;
 
+use App\BinCountry\BinCountryResolverInterface;
+use App\CalculateConsoleCommand;
 use App\Calculation\BinMultiplier\BinMultiplierResolver;
 use App\Calculation\TransactionCommissionCalculator;
-use App\CardBin\CardBinToCountryProviderInterface;
 use App\Collection\Collection;
-use App\ConsoleCommand\CalculateConsoleCommand;
 use App\CurrencyRates\RateResolver;
 use App\CurrencyRates\RatesProvider\RatesProviderInterface;
 use App\Input\File\FileInputProvider;
@@ -25,7 +25,7 @@ final class CalculateConsoleCommandTest extends TestCase
 {
     private RatesProviderInterface $ratesProviderMock;
 
-    private CardBinToCountryProviderInterface $binToCountryProviderMock;
+    private BinCountryResolverInterface $binToCountryProviderMock;
 
     /**
      * @dataProvider provider
@@ -98,12 +98,12 @@ final class CalculateConsoleCommandTest extends TestCase
     private function mockBinToCountryProvider(string $fixturePath) : void
     {
         $binToCountryDecoded = $this->decodeFromFile($fixturePath);
-        $this->binToCountryProviderMock = $this->getMockBuilder(CardBinToCountryProviderInterface::class)->getMock();
+        $this->binToCountryProviderMock = $this->getMockBuilder(BinCountryResolverInterface::class)->getMock();
         $map = \array_map(static function ($bin, $countryCode) {
             return [(string) $bin, $countryCode];
         }, \array_keys($binToCountryDecoded), $binToCountryDecoded);
         $this->binToCountryProviderMock
-            ->method('provide')
+            ->method('resolve')
             ->willReturnMap($map);
     }
 

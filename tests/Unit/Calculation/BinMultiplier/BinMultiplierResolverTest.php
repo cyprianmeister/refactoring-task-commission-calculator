@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Test\Unit\Calculation\BinMultiplier;
 
+use App\BinCountry\BinCountryResolverInterface;
 use App\Calculation\BinMultiplier\BinMultiplierResolver;
-use App\CardBin\CardBinToCountryProviderInterface;
 use App\Collection\Collection;
 use PHPUnit\Framework\TestCase;
 
 class BinMultiplierResolverTest extends TestCase
 {
-    private CardBinToCountryProviderInterface $cardBinToCountryProvider;
+    private BinCountryResolverInterface $cardBinToCountryProvider;
 
     protected function setUp() : void
     {
-        $this->cardBinToCountryProvider = $this->getMockBuilder(CardBinToCountryProviderInterface::class)->getMock();
+        $this->cardBinToCountryProvider = $this->getMockBuilder(BinCountryResolverInterface::class)->getMock();
     }
 
     /**
@@ -27,7 +27,7 @@ class BinMultiplierResolverTest extends TestCase
          * @phpstan-ignore-next-line
          */
         $this->cardBinToCountryProvider->expects($this->once())
-            ->method('provide')
+            ->method('resolve')
             ->with($this->equalTo($inputData['bin']))
             ->willReturn($inputData['countryCode']);
 
