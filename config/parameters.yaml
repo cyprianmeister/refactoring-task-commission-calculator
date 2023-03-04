@@ -8,6 +8,3 @@ parameters:
     not.in.collection.multiplier: '%env(NOT_IN_COLLECTION_MULTIPLIER)%'
 
     rates.provider.api.key: '%env(RATES_PROVIDER_API_KEY)%'
-    rates.provider.endpoint.url: '%env(RATES_PROVIDER_ENDPOINT_URL)%'
-
-    bin.to.country.provider.endpoint.url: '%env(BIN_TO_COUNTRY_PROVIDER_ENDPOINT_URL)%'

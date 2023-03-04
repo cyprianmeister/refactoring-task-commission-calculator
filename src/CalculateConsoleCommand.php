@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ConsoleCommand;
+namespace App;
 
 use App\Calculation\TransactionCalculatorInterface;
 use App\Exception\ApplicationException;

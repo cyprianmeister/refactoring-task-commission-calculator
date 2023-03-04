@@ -50,20 +50,22 @@ services:
 
     Symfony\Contracts\Cache\ItemInterface: '@file_cache'
 
-    rates_api_provider:
-        class: App\CurrencyRates\RatesProvider\ApiRatesProvider
+    api_layer_exchange_rates_adapter:
+        class: App\CurrencyRates\FetchRatesAdapter\ApiLayerExchangeRatesAdapter
         arguments:
             $apiKey: '%rates.provider.api.key%'
-            $url: '%rates.provider.endpoint.url%'
+
+    memory_cache_rates_provider:
+        class: App\CurrencyRates\RatesProvider\MemoryCacheRatesProvider
+        arguments:
+            $ratesAdapter: '@api_layer_exchange_rates_adapter'
 
     App\CurrencyRates\RateResolver:
         arguments:
-            $ratesProvider: '@rates_api_provider'
+            $ratesProvider: '@memory_cache_rates_provider'
 
-    bin_to_country_api_provider:
-        class: App\CardBin\ApiCardBinToCountryProvider
-        arguments:
-            $url: '%bin.to.country.provider.endpoint.url%'
+    look_up_bin_list_country_resolver:
+        class: App\BinCountry\LookUpBinListCountryResolver
 
     country_codes_collection:
         class: App\Collection\Collection
@@ -73,12 +75,12 @@ services:
     multiplier_resolver:
         class: App\Calculation\BinMultiplier\BinMultiplierResolver
         arguments:
-            $binToCountryProvider: '@bin_to_country_api_provider'
+            $binToCountryResolver: '@look_up_bin_list_country_resolver'
             $countriesCollection: '@country_codes_collection'
             $inCollectionMultiplier: '%in.collection.multiplier%'
             $notInCollectionMultiplier: '%not.in.collection.multiplier%'
 
     App\Calculation\TransactionCommissionCalculator:
         arguments:
-            $multiplierProvider: '@multiplier_resolver'
+            $multiplierResolver: '@multiplier_resolver'
             $targetCurrency: '%target.currency%'

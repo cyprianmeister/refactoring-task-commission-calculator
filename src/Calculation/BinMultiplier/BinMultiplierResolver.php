@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Calculation\BinMultiplier;
 
-use App\CardBin\CardBinToCountryProviderInterface;
+use App\BinCountry\BinCountryResolverInterface;
 use App\Collection\CollectionInterface;
-use App\Exception\CardBinToCountryProviderException;
+use App\Exception\BinCountryResolverException;
 
 final class BinMultiplierResolver implements BinMultiplierResolverInterface
 {
     public function __construct(
-        private readonly CardBinToCountryProviderInterface $binToCountryProvider,
+        private readonly BinCountryResolverInterface $binToCountryResolver,
         private readonly CollectionInterface $countriesCollection,
         private readonly float $inCollectionMultiplier,
         private readonly float $notInCollectionMultiplier,
@@ -19,11 +19,11 @@ final class BinMultiplierResolver implements BinMultiplierResolverInterface
     }
 
     /**
-     * @throws CardBinToCountryProviderException
+     * @throws BinCountryResolverException
      */
     public function resolve(string $bin) : float
     {
-        $countryCode = $this->binToCountryProvider->provide($bin);
+        $countryCode = $this->binToCountryResolver->resolve($bin);
 
         $inCollection = $this->countriesCollection->isInCollection($countryCode);
 
