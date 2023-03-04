@@ -8,7 +8,40 @@ RUN set -eux; \
     \
     docker-php-ext-install sockets bcmath; \
     \
-    apk del .build-deps;
+    apk del .build-deps; \
+    \
+    cd /usr/local/etc/php/conf.d/; \
+    { \
+    echo 'date.timezone = Europe/Warsaw'; \
+    } | tee 00_timezone.ini; \
+    \
+    cd /usr/local/etc/php/conf.d/; \
+    { \
+    echo 'short_open_tag = Off'; \
+    echo 'session.auto_start = Off'; \
+    echo 'magic_quotes_gpc = Off'; \
+    echo 'register_globals = Off'; \
+    echo 'memory_limit = 256M'; \
+    echo 'realpath_cache_size = 4096K'; \
+    echo 'realpath_cache_ttl = 600'; \
+    echo 'expose_php = off'; \
+    } | tee 00_settings.ini; \
+    \
+    docker-php-ext-install opcache; \
+    cd /usr/local/etc/php/conf.d/; \
+    { \
+    echo 'opcache.enable = 1'; \
+    echo 'opcache.enable_cli = 1'; \
+    echo 'opcache.fast_shutdown = 1'; \
+    echo 'opcache.validate_timestamps = 0'; \
+    echo 'opcache.max_wasted_percentage = 10'; \
+    echo 'opcache.memory_consumption = 128'; \
+    echo 'opcache.max_accelerated_files=4000'; \
+    echo 'opcache.revalidate_freq=60'; \
+    echo 'opcache.interned_strings_buffer = 8'; \
+    echo 'opcache.jit_buffer_size = 100M'; \
+    echo 'opcache.jit = 1255'; \
+    } | tee 00_opcache.ini;
 
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 

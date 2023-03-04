@@ -45,7 +45,7 @@
     },
     "scripts": {
         "phpunit": "phpunit",
-        "phpspec": "bin/phpspec",
+        "phpspec": "bin/phpspec r",
         "fix-cs": "php-cs-fixer fix",
         "test-cs": "php-cs-fixer fix --dry-run -v",
         "test-ca-psalm": "bin/psalm",
