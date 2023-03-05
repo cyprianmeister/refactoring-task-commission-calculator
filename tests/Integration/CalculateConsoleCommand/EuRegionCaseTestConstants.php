@@ -2,19 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Integration\Command\Constants;
+namespace App\Test\Integration\CalculateConsoleCommand;
 
 final class EuRegionCaseTestConstants
 {
-    public const FIXTURES_PATH = __DIR__ . '/../fixtures/';
+    public const FIXTURES_PATH = __DIR__ . '/fixtures/';
 
     public const INPUT_FIXTURE = 'input.txt';
 
     public const OUTPUT_FIXTURE = 'output.txt';
 
-    public const RATES_FIXTURE = 'eur_rates.json';
+    public const RATES_PROVIDER_FIXTURE = 'eur_rates.json';
 
-    public const BIN_TO_COUNTRY_FIXTURE = 'bin_to_country.json';
+    public const BIN_TO_COUNTRY_PROVIDER_FIXTURE = 'bin_to_country.json';
+
+    public const RATES_HTTP_RESPONSE_FIXTURE = 'eur_rates_http_response.json';
+
+    public const BIN_TO_COUNTRY_HTTP_CLIENT_FIXTURE = 'bin_to_country_http_responses.json';
 
     public const EUR = 'EUR';
 
@@ -27,9 +31,7 @@ final class EuRegionCaseTestConstants
 
     public const IS_NOT_EU_COUNTRY_MULTIPLIER = 0.02;
 
-    private function __construct()
-    {
-    }
+    public const EU_REGION_CASE = 'eu_region_case';
 
     public static function getCaseFixturePath(string $case, string $fixtureFile) : string
     {
