@@ -7,7 +7,7 @@ namespace App\CurrencyRates\RatesProvider;
 use App\Collection\Collection;
 use App\Collection\CollectionInterface;
 use App\CurrencyRates\FetchRatesAdapter\FetchRatesAdapterInterface;
-use App\Exception\RatesProviderException;
+use App\Exception\FetchRatesAdapterException;
 
 final class MemoryCacheRatesProvider implements RatesProviderInterface
 {
@@ -20,19 +20,15 @@ final class MemoryCacheRatesProvider implements RatesProviderInterface
     }
 
     /**
-     * @throws RatesProviderException
+     * @throws FetchRatesAdapterException
      */
     public function provide(string $baseCurrency) : CollectionInterface
     {
-        try {
-            if ($baseCurrency !== $this->baseCurrency || empty($this->rates)) {
-                $this->baseCurrency = $baseCurrency;
-                $this->rates = $this->ratesAdapter->fetchRates($baseCurrency);
-            }
-
-            return new Collection($this->rates);
-        } catch (\Throwable $exception) {
-            throw new RatesProviderException(previous: $exception);
+        if ($baseCurrency !== $this->baseCurrency || empty($this->rates)) {
+            $this->baseCurrency = $baseCurrency;
+            $this->rates = $this->ratesAdapter->fetchRates($baseCurrency);
         }
+
+        return new Collection($this->rates);
     }
 }

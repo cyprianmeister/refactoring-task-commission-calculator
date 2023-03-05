@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Test\Integration\Command;
+namespace App\Test\Integration\CalculateConsoleCommand;
 
 use App\BinCountry\BinCountryResolverInterface;
 use App\CalculateConsoleCommand;
@@ -14,6 +14,7 @@ use App\CurrencyRates\RatesProvider\RatesProviderInterface;
 use App\Input\File\FileInputProvider;
 use App\Input\File\FileReader;
 use App\Money\MoneyConverter;
+use App\Test\Integration\JsonFixtureAwareTrait;
 use App\Transaction\TransactionDeserializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -21,18 +22,16 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-final class CalculateConsoleCommandTest extends TestCase
+final class MockedProviderTest extends TestCase
 {
-    private RatesProviderInterface $ratesProviderMock;
-
-    private BinCountryResolverInterface $binToCountryProviderMock;
+    use JsonFixtureAwareTrait;
 
     /**
-     * @dataProvider provider
+     * @dataProvider getTestData
      *
      * @throws \JsonException
      */
-    public function testExecuteCalculateCommand(
+    public function testExecuteCalculateCommandWithMockedProviders(
         string $targetCurrency,
         array $countryCodesCollection,
         float|int $inCollectionMultiplier,
@@ -42,15 +41,15 @@ final class CalculateConsoleCommandTest extends TestCase
         string $ratesFilePath,
         string $binsToCountryCodesFilePath,
     ) : void {
-        $this->mockRatesProvider($targetCurrency, $ratesFilePath);
-        $this->mockBinToCountryProvider($binsToCountryCodesFilePath);
+        $ratesProviderMock = $this->mockRatesProvider($targetCurrency, $ratesFilePath);
+        $binToCountryProviderMock = $this->mockBinToCountryProvider($binsToCountryCodesFilePath);
 
         $transactionCalculator = new TransactionCommissionCalculator(
             new MoneyConverter(
-                new RateResolver($this->ratesProviderMock)
+                new RateResolver($ratesProviderMock)
             ),
             new BinMultiplierResolver(
-                $this->binToCountryProviderMock,
+                $binToCountryProviderMock,
                 new Collection($countryCodesCollection),
                 $inCollectionMultiplier,
                 $notInCollectionMultiplier
@@ -74,46 +73,55 @@ final class CalculateConsoleCommandTest extends TestCase
         $this->assertStringEqualsFile($outputFilePath, $commandTester->getDisplay());
     }
 
-    public function provider() : \Generator
+    public function getTestData() : \Generator
     {
-        return CalculateConsoleCommandProvider::getTestCase();
+        return yield [
+            EuRegionCaseTestConstants::EUR,
+            EuRegionCaseTestConstants::EU_COUNTRY_CODES,
+            EuRegionCaseTestConstants::IS_EU_COUNTRY_MULTIPLIER,
+            EuRegionCaseTestConstants::IS_NOT_EU_COUNTRY_MULTIPLIER,
+            EuRegionCaseTestConstants::getCaseFixturePath(
+                EuRegionCaseTestConstants::EU_REGION_CASE,
+                EuRegionCaseTestConstants::INPUT_FIXTURE
+            ),
+            EuRegionCaseTestConstants::getCaseFixturePath(
+                EuRegionCaseTestConstants::EU_REGION_CASE,
+                EuRegionCaseTestConstants::OUTPUT_FIXTURE
+            ),
+            EuRegionCaseTestConstants::getCaseFixturePath(
+                EuRegionCaseTestConstants::EU_REGION_CASE,
+                EuRegionCaseTestConstants::RATES_PROVIDER_FIXTURE
+            ),
+            EuRegionCaseTestConstants::getCaseFixturePath(
+                EuRegionCaseTestConstants::EU_REGION_CASE,
+                EuRegionCaseTestConstants::BIN_TO_COUNTRY_PROVIDER_FIXTURE
+            ),
+        ];
     }
 
-    /**
-     * @throws \JsonException
-     */
-    private function mockRatesProvider(string $targetCurrency, string $fixturePath) : void
+    private function mockRatesProvider(string $targetCurrency, string $fixturePath) : RatesProviderInterface
     {
         $ratesCollection = new Collection($this->decodeFromFile($fixturePath));
-        $this->ratesProviderMock = $this->getMockBuilder(RatesProviderInterface::class)->getMock();
-        $this->ratesProviderMock->expects($this->atLeastOnce())
+        $mock = $this->getMockBuilder(RatesProviderInterface::class)->getMock();
+        $mock->expects($this->atLeastOnce())
             ->method('provide')
             ->with($this->equalTo($targetCurrency))
             ->willReturn($ratesCollection);
+
+        return $mock;
     }
 
-    /**
-     * @throws \JsonException
-     */
-    private function mockBinToCountryProvider(string $fixturePath) : void
+    private function mockBinToCountryProvider(string $fixturePath) : BinCountryResolverInterface
     {
         $binToCountryDecoded = $this->decodeFromFile($fixturePath);
-        $this->binToCountryProviderMock = $this->getMockBuilder(BinCountryResolverInterface::class)->getMock();
+        $mock = $this->getMockBuilder(BinCountryResolverInterface::class)->getMock();
         $map = \array_map(static function ($bin, $countryCode) {
             return [(string) $bin, $countryCode];
         }, \array_keys($binToCountryDecoded), $binToCountryDecoded);
-        $this->binToCountryProviderMock
+        $mock
             ->method('resolve')
             ->willReturnMap($map);
-    }
 
-    /**
-     * @throws \JsonException
-     */
-    private function decodeFromFile(string $fixturePath) : array
-    {
-        $jsonBinToCountry = (string) \file_get_contents($fixturePath);
-
-        return \json_decode($jsonBinToCountry, true, 512, JSON_THROW_ON_ERROR);
+        return $mock;
     }
 }
